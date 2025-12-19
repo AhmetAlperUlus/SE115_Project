@@ -47,16 +47,13 @@ public class Main {
                         }
                     }
                 }
+
+                sc.close();
             }
 
             catch (Exception e) {
                 e.printStackTrace();
-            }
-
-            finally {
-                sc.close();
-            }
-
+            }   
         }
     }
 
