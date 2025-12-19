@@ -1,5 +1,5 @@
-import java.io.File;
 import java.util.Scanner;
+import java.nio.file.Paths;
 
 public class Main {
     public static Scanner sc = null;
@@ -22,12 +22,10 @@ public class Main {
     public static void loadData() {
         for (int i = 0 ; i < MONTHS ; i++) {
             String fileName =  "./Data_Files/" + months[i] + ".txt";
-            File file = new File(fileName);
-
-            if (!(file.exists())) continue;
 
             try {
-                Scanner sc = new Scanner(file);
+                sc = new Scanner(Paths.get(fileName));
+
                 if (sc.hasNextLine()) sc.nextLine();
 
                 while (sc.hasNextLine()) {
@@ -36,14 +34,20 @@ public class Main {
                     String[] dataParts = line.split(",");
 
                     if (dataParts.length == 3) {
-                        int day = Integer.parseInt(dataParts[0].trim());
-                        String commName = dataParts[1].trim();
-                        int profit = Integer.parseInt(dataParts[2].trim());
+                        try {
+                            int day = Integer.parseInt(dataParts[0].trim());
+                            String commName = dataParts[1].trim();
+                            int profit = Integer.parseInt(dataParts[2].trim());
 
-                        int cIndex = getCommoditiesIndex(commName);
+                            int cIndex = getCommoditiesIndex(commName);
 
-                        if (day >= 1 && day <= DAYS && cIndex != -1) {
-                            data[i][day - 1][cIndex] = profit;
+                            if (day >= 1 && day <= DAYS && cIndex != -1) {
+                                data[i][day - 1][cIndex] = profit;
+                            }
+                        }
+
+                        catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -84,7 +88,7 @@ public class Main {
     }
 
     public static int totalProfitOnDay(int month, int day) {
-        if (month < 0 || month > MONTHS || day < 1 || day > DAYS) return -6666;
+        if (month < 0 || month >= MONTHS || day < 1 || day > DAYS) return -6666;
 
         int total = 0;
         for (int i = 0 ; i < COMMS ; i++) {
@@ -97,7 +101,7 @@ public class Main {
     public static int commodityProfitInRange(String commodity, int from, int to) {
         int cIndex = getCommoditiesIndex(commodity);
 
-        if (cIndex == 1 || from < 1 || to > DAYS || from > to) return -3333;
+        if (cIndex == -1 || from < 1 || to > DAYS || from > to) return -3333;
 
         int total = 0;
         for (int i = 0 ; i < MONTHS ; i++) {
@@ -112,7 +116,7 @@ public class Main {
     public static int bestDayOfMonth(int month) {
         if (month < 0 || month >= MONTHS) return -1111;
 
-        long maxValue = Long.MAX_VALUE;
+        long maxValue = Long.MIN_VALUE;
         int bestDay = -1;
 
         for (int i = 0 ; i <= DAYS ; i++) {
@@ -122,6 +126,7 @@ public class Main {
                 bestDay = i;
             }
         }
+
         return bestDay;
     }
 
